@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bootstrap</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container text-center">
+      <div class="row m-3">
+        <button id="start" class="col btn border-secondary border-2 bg-warning">
+          開始
+        </button>
+        <button id="retry" class="col btn border-secondary border-2">
+          放棄重來
+        </button>
+        <button id="ans" class="col btn border-secondary border-2">
+          看答案
+        </button>
+      </div>
+      <div class="row m-3">
+        <div
+          class="col-2 d-flex justify-content-center align-items-center border border-dark"
+        >
+          <p class="align-items-center mb-0">猜答案</p>
+        </div>
+        <input id="input" class="col-8" type="text" />
+        <button id="guess" class="col-2 btn border-secondary">猜!</button>
+      </div>
+      <div id="historyList" class="mt-3"></div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const startBtn = document.querySelector("#start");
+      const retryBtn = document.querySelector("#retry");
+      const ansBtn = document.querySelector("#ans");
+      const guessInput = document.querySelector("#input");
+      const guessBtn = document.querySelector("#guess");
+      const historyList = document.querySelector("#historyList");
+
+      //開始按鈕功能
+      //產生四位數隨機亂數
+      function generateAnswer() {
+        const numSet = new Set();
+        while (numSet.size < 4) {
+          const num = Math.floor(Math.random() * 10);
+          numSet.add(num);
+        }
+        return Array.from(numSet).join(""); //建立成陣列再用join方法組成一串數字
+      }
+      //產生答案到console中(方便查看)
+      startBtn.addEventListener("click", () => {
+        answer = generateAnswer();
+        console.log(`這局答案是: ${answer}`);
+
+        historyList.innerHTML = "";
+        guessInput.value = "";
+        guessInput.focus(); //游標自動跳到輸入框中
+      });
+
+      //"猜"按鈕功能
+      guessBtn.addEventListener("click", () => {
+        if (typeof answer === "undefined" || !answer) {
+          return;
+        }
+        const inputVal = guessInput.value.trim(); //避免前後空白鍵影響到遊戲
+
+        //字串是類陣列 (判斷幾A幾B)
+        let a = 0;
+        let b = 0;
+        for (let i = 0; i < 4; i++) {
+          if (inputVal[i] === answer[i]) {
+            a++;
+          } else if (answer.includes(inputVal[i])) {
+            b++;
+          }
+        }
+        //建立歷史清單
+        const newDiv = document.createElement("div");
+        newDiv.className =
+          "row justify-content-center align-items-center my-2 fs-5";
+        historyList.append(newDiv);
+        const newspan1 = document.createElement("span");
+        newspan1.className = "col-3 text-end";
+        const newspan2 = document.createElement("span");
+        newspan2.className = "col-3 text-start border-bottom pb-1";
+        newDiv.append(newspan1, newspan2);
+
+        if (a === 4) {
+          newspan1.innerHTML = `<span class="badge bg-success p-2">${a}A${b}B</span>`;
+        } else {
+          newspan1.innerHTML = `<span class="badge bg-danger p-2">${a}A${b}B</span>`;
+        }
+
+        // 塞入使用者剛剛輸入的 4 位數字
+        newspan2.textContent = inputVal;
+
+        // 猜完後自動清空輸入框，並將游標鎖回輸入框
+        guessInput.value = "";
+        guessInput.focus();
+      });
+      let answer = "";
+
+      //放棄重來按鈕
+      retryBtn.addEventListener("click", () => {
+        if (!answer) {
+          return;
+        }
+        historyList.innerHTML = "";
+        guessInput.value = "";
+        guessInput.focus();
+      });
+
+      //看答案按鈕
+      ansBtn.addEventListener("click", () => {
+        if (!answer) {
+          return;
+        } else {
+          alert(`這局的答案是：${answer}`);
+        }
+      });
+    </script>
+  </body>
+</html>

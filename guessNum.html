@@ -42,6 +42,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
+      let answer = "";
       const startBtn = document.querySelector("#start");
       const retryBtn = document.querySelector("#retry");
       const ansBtn = document.querySelector("#ans");
@@ -50,28 +51,29 @@
       const historyList = document.querySelector("#historyList");
 
       //開始按鈕功能
-      //產生四位數隨機亂數
+      //產生四位數隨機亂數 (用set去重，再利用array.from建立成陣列，最後用join方法組成一串數字)
       function generateAnswer() {
         const numSet = new Set();
         while (numSet.size < 4) {
           const num = Math.floor(Math.random() * 10);
           numSet.add(num);
         }
-        return Array.from(numSet).join(""); //建立成陣列再用join方法組成一串數字
+        return Array.from(numSet).join("");
       }
+      //開始按鈕功能
       //產生答案到console中(方便查看)
       startBtn.addEventListener("click", () => {
         answer = generateAnswer();
         console.log(`這局答案是: ${answer}`);
 
-        historyList.innerHTML = "";
-        guessInput.value = "";
+        historyList.innerHTML = ""; //清空歷史紀錄
+        guessInput.value = "";  //清空輸入框
         guessInput.focus(); //游標自動跳到輸入框中
       });
 
       //"猜"按鈕功能
       guessBtn.addEventListener("click", () => {
-        if (typeof answer === "undefined" || !answer) {
+        if (typeof answer === "undefined" || !answer) { //undefined表示answer尚未被定義(未開始)
           return;
         }
         const inputVal = guessInput.value.trim(); //避免前後空白鍵影響到遊戲
@@ -86,6 +88,7 @@
             b++;
           }
         }
+
         //建立歷史清單
         const newDiv = document.createElement("div");
         newDiv.className =
@@ -97,29 +100,30 @@
         newspan2.className = "col-3 text-start border-bottom pb-1";
         newDiv.append(newspan1, newspan2);
 
+        //判斷條件塞入span1，改變背景顏色
         if (a === 4) {
           newspan1.innerHTML = `<span class="badge bg-success p-2">${a}A${b}B</span>`;
         } else {
           newspan1.innerHTML = `<span class="badge bg-danger p-2">${a}A${b}B</span>`;
         }
 
-        // 塞入使用者剛剛輸入的 4 位數字
+        // 右邊span2塞入使用者剛剛輸入的 4 位數字
         newspan2.textContent = inputVal;
 
         // 猜完後自動清空輸入框，並將游標鎖回輸入框
         guessInput.value = "";
         guessInput.focus();
       });
-      let answer = "";
+      
 
       //放棄重來按鈕
       retryBtn.addEventListener("click", () => {
         if (!answer) {
           return;
         }
-        historyList.innerHTML = "";
-        guessInput.value = "";
-        guessInput.focus();
+        historyList.innerHTML = ""; //清空歷史紀錄
+        guessInput.value = ""; //清空輸入框
+        guessInput.focus(); //游標鎖回輸入框
       });
 
       //看答案按鈕
